@@ -95,13 +95,12 @@ echo convert %VDiskPtType%
 echo create partition primary
 echo select partition 1
 echo format fs=ntfs quick label="OpenNT"
-echo active
 echo detach vdisk
-) > %Temp%\CreateTestImage.DiskPartScript
+) > %Temp%\CreateDiskImage.DiskPartScript
 
-diskpart /s %Temp%\CreateTestImage.DiskPartScript
+diskpart /s %Temp%\CreateDiskImage.DiskPartScript
 
-del %Temp%\CreateTestImage.DiskPartScript
+del %Temp%\CreateDiskImage.DiskPartScript
 
 REM //
 REM // Restore environment.

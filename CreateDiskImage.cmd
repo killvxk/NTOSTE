@@ -77,24 +77,38 @@ REM //
 REM // (1) Create virtual disk file.
 REM // (2) Initialize disk partition table.
 REM // (3) Create partition.
-REM // (4) Format partition.
-REM // (5) Mount partition.
-REM // (6) Dismount partition.
-REM // (7) Set partition as active boot partition.
-REM // (8) Detach virtual disk file.
-REM //
-REM // NOTE: automount enable is required; otherwise, format step would fail.
+REM // (4) Mount partition.
 REM //
 
 (
-echo automount enable
+echo automount disable
+echo automount scrub
 echo create vdisk file="%VDiskPath%" maximum=%VDiskSize% type=expandable
 echo select vdisk file="%VDiskPath%"
 echo attach vdisk
 echo convert %VDiskPtType%
 echo create partition primary
 echo select partition 1
-echo format fs=ntfs quick label="OpenNT"
+echo assign letter=X
+) > %Temp%\CreateDiskImage.DiskPartScript
+
+diskpart /s %Temp%\CreateDiskImage.DiskPartScript
+
+REM //
+REM // (5) Format partition.
+REM //
+
+format /y x: /q /fs:%VDiskFsType% /v:OpenNT
+
+REM //
+REM // (6) Dismount partition.
+REM // (7) Detach virtual disk file.
+REM //
+
+(
+echo select vdisk file="%VDiskPath%"
+echo select partition 1
+echo remove
 echo detach vdisk
 ) > %Temp%\CreateDiskImage.DiskPartScript
 

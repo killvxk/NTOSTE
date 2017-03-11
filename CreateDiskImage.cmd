@@ -21,8 +21,7 @@ REM
 REM --*/
 
 REM //
-REM // Ensure that the script is running as administrator and request administrator privilege if
-REM // if required.
+REM // Ensure that the script is running as administrator.
 REM //
 
 >nul 2>&1 "%SystemRoot%\system32\cacls.exe" "%SystemRoot%\system32\config\system"

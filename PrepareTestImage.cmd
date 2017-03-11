@@ -108,7 +108,8 @@ REM // Create system directory structure.
 REM //
 
 mkdir "X:\Windows"
-mkdir "X:\Windows\system32"
+mkdir "X:\Windows\System32"
+mkdir "X:\Windows\System32\Config"
 
 REM //
 REM // Copy NTLDR, NTDETECT.COM and write boot.ini.
@@ -148,6 +149,7 @@ REM //
 echo Generating SYSTEM registry hive ...
 
 REM // TODO: Write code that generates SYSTEM registry hive.
+copy /y "%NtTreePath%\system" "X:\Windows\System32\Config\system"
 
 REM //
 REM // Dismount disk image.

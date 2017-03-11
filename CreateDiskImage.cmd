@@ -6,11 +6,11 @@ REM Copyright (c) 2017  OpenNT Project
 REM 
 REM Module Name:
 REM
-REM     CreateTestImage.cmd
+REM     CreateDiskImage.cmd
 REM
 REM Abstract:
 REM
-REM     This script creates a disk image for test purpose.
+REM     This script creates a disk image with a pre-formatted partition for testing.
 REM
 REM Author:
 REM
@@ -114,7 +114,7 @@ REM //
 :DisplayUsage
 echo.
 echo Usage:
-echo  CreateTestImage.cmd [FilePath] [MaximumSize] [PartitionTableType] [FilesystemType]
+echo  CreateDiskImage.cmd [FilePath] [MaximumSize] [PartitionTableType] [FilesystemType]
 echo.
 echo  FilePath = Path to the disk image file to be created
 echo  MaximumSize = Maximum size of the disk image in megabytes
@@ -122,7 +122,7 @@ echo  PartitionTableType = Partition table type (mbr or gpt)
 echo  FilesystemType = Filesystem type (fat, fat32, ntfs)
 echo.
 echo Example:
-echo  CreateTestImage.cmd "C:\test.vhd" 512 mbr ntfs
+echo  CreateDiskImage.cmd C:\test.vhd 512 mbr ntfs
 echo.
 
 exit /b

@@ -28,14 +28,8 @@ REM //
 >nul 2>&1 "%SystemRoot%\system32\cacls.exe" "%SystemRoot%\system32\config\system"
 
 if errorlevel 1 (
-    echo Administrator privilege required. Re-launching as the administrator.
-    
-    echo Set UAC = CreateObject^("Shell.Application"^) > "%Temp%\RunAsAdmin.vbs"
-    echo UAC.ShellExecute "cmd.exe", "/c %~s0 %1 %2 %3 %4", "", "runas", 1 >> "%Temp%\RunAsAdmin.vbs"
-
-    "%Temp%\RunAsAdmin.vbs"
-    del "%Temp%\RunAsAdmin.vbs"
-    exit /b
+    echo This script must be run as the administrator.
+    exit /b 1
 )
 
 REM //
@@ -55,7 +49,7 @@ if "%3" equ "" goto DisplayUsage
 if "%4" equ "" goto DisplayUsage
 
 REM //
-REM // Virtual Disk Image Parameters
+REM // Initialise operating parameters.
 REM //
 
 REM set VDiskPath=C:\OpenNT\Repositories\NTOSTE.master\test.vhd
@@ -68,6 +62,17 @@ set VDiskSize=%2
 set VDiskPtType=%3
 set VDiskFsType=%4
 
+REM //
+REM // Ensure that the specified disk image does not already exist.
+REM //
+
+if exist "%VDiskPath%" (
+    echo Disk image file already exists. Script execution aborted.
+    exit /b 3
+)
+
+REM //
+REM // Create a disk image.
 REM //
 REM // (1) Create virtual disk file.
 REM // (2) Initialize disk partition table.
@@ -105,7 +110,7 @@ REM //
 popd
 endlocal
 
-exit /b
+exit /b 0
 
 REM //
 REM // Display script usage if invalid parameters are supplied.
@@ -125,4 +130,4 @@ echo Example:
 echo  CreateDiskImage.cmd C:\test.vhd 512 mbr ntfs
 echo.
 
-exit /b
+exit /b 2

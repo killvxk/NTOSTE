@@ -74,7 +74,7 @@ REM //
 
 if exist "%1" del "%1"
 
-call CreateDiskImage.cmd %1 512 mbr ntfs
+call CreateDiskImage.cmd %1 512 mbr fat
 
 if errorlevel 1 (
     echo Failed to create a disk image. Aborted.
@@ -101,15 +101,17 @@ REM // NOTE: We use /nt60 parameter that writes the NT 6.0 boot code because it 
 REM //       BOOTMGR is not available anyway.
 REM //
 
-bootsect /nt60 X: /mbr
+bootsect /nt52 X: /mbr
 
 REM //
 REM // Create system directory structure.
 REM //
 
-mkdir "X:\Windows"
-mkdir "X:\Windows\System32"
-mkdir "X:\Windows\System32\Config"
+mkdir "X:\WINNT"
+mkdir "X:\WINNT\Fonts"
+mkdir "X:\WINNT\System32"
+mkdir "X:\WINNT\System32\Config"
+mkdir "X:\WINNT\System32\Drivers"
 
 REM //
 REM // Copy NTLDR, NTDETECT.COM and write boot.ini.
@@ -125,22 +127,26 @@ echo Writing boot.ini ...
 
 (
 echo [boot loader]
-echo timeout=30
-echo default=multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\Windows
+echo timeout=1
+echo default=multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT
 echo.
 echo [operating systems]
-echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\Windows="OpenNT"
+echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT="OpenNT"
+echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT="OpenNT" /debug
 ) > X:\boot.ini
 
 REM //
-REM // Copy kernel and HAL.
+REM // Copy kernel, HAL, NTDLL.
 REM //
 
 echo Copying kernel ...
-copy /y "%NtTreePath%\ntkrnlmp.exe" "X:\Windows\System32\ntoskrnl.exe"
+copy /y "%NtTreePath%\ntoskrnl.exe" "X:\WINNT\System32\ntoskrnl.exe"
 
 echo Copying HAL ...
-copy /y "%NtTreePath%\halmps.dll" "X:\Windows\System32\hal.dll"
+copy /y "%NtTreePath%\hal.dll" "X:\WINNT\System32\hal.dll"
+
+echo Copying NTDLL ...
+copy /y "%NtTreePath%\ntdll.dll" "X:\WINNT\System32\ntdll.dll"
 
 REM //
 REM // Generate SYSTEM registry hive.
@@ -149,7 +155,39 @@ REM //
 echo Generating SYSTEM registry hive ...
 
 REM // TODO: Write code that generates SYSTEM registry hive.
-copy /y "%NtTreePath%\system" "X:\Windows\System32\Config\system"
+copy /y "%NtTreePath%\system" "X:\WINNT\System32\Config\system"
+copy /y "%NtTreePath%\system.sav" "X:\WINNT\System32\Config\system.sav"
+
+REM //
+REM // Copy NLS files.
+REM //
+
+echo Copying NLS files ...
+copy /y "%NtTreePath%\*.nls" "X:\WINNT\System32\*.nls"
+
+REM //
+REM // Copy font files.
+REM //
+
+echo Copying font files ...
+copy /y "%NtTreePath%\vgaoem.fon" "X:\WINNT\Fonts\vgaoem.fon"
+
+REM //
+REM // Copy driver files.
+REM //
+
+echo Copying driver files ...
+copy /y "%NtTreePath%\atapi.sys" "X:\WINNT\System32\Drivers\atapi.sys"
+copy /y "%NtTreePath%\scsiport.sys" "X:\WINNT\System32\Drivers\scsiport.sys"
+copy /y "%NtTreePath%\disk.sys" "X:\WINNT\System32\Drivers\disk.sys"
+copy /y "%NtTreePath%\class2.sys" "X:\WINNT\System32\Drivers\class2.sys"
+copy /y "%NtTreePath%\ntfs.sys" "X:\WINNT\System32\Drivers\ntfs.sys"
+
+copy /y "%NtTreePath%\fs_rec.sys" "X:\WINNT\System32\Drivers\fs_rec.sys"
+copy /y "%NtTreePath%\fastfat.sys" "X:\WINNT\System32\Drivers\fastfat.sys"
+copy /y "%NtTreePath%\atdisk.sys" "X:\WINNT\System32\Drivers\atdisk.sys"
+copy /y "%NtTreePath%\ftdisk.sys" "X:\WINNT\System32\Drivers\ftdisk.sys"
+copy /y "%NtTreePath%\abiosdsk.sys" "X:\WINNT\System32\Drivers\abiosdsk.sys"
 
 REM //
 REM // Dismount disk image.

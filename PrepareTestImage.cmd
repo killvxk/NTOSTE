@@ -97,9 +97,6 @@ diskpart /s %Temp%\PrepareTestImage.DiskPartScript
 REM //
 REM // Write boot code.
 REM //
-REM // NOTE: We use /nt60 parameter that writes the NT 6.0 boot code because it loads NTLDR if
-REM //       BOOTMGR is not available anyway.
-REM //
 
 bootsect /nt52 X: /mbr
 
@@ -127,11 +124,11 @@ echo Writing boot.ini ...
 
 (
 echo [boot loader]
-echo timeout=1
+echo timeout=2
 echo default=multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT
 echo.
 echo [operating systems]
-echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT="OpenNT"
+echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT="OpenNT" /crashdebug
 echo multi^(0^)disk^(0^)rdisk^(0^)partition^(1^)\WINNT="OpenNT" /debug
 ) > X:\boot.ini
 
@@ -182,12 +179,18 @@ copy /y "%NtTreePath%\scsiport.sys" "X:\WINNT\System32\Drivers\scsiport.sys"
 copy /y "%NtTreePath%\disk.sys" "X:\WINNT\System32\Drivers\disk.sys"
 copy /y "%NtTreePath%\class2.sys" "X:\WINNT\System32\Drivers\class2.sys"
 copy /y "%NtTreePath%\ntfs.sys" "X:\WINNT\System32\Drivers\ntfs.sys"
-
-copy /y "%NtTreePath%\fs_rec.sys" "X:\WINNT\System32\Drivers\fs_rec.sys"
 copy /y "%NtTreePath%\fastfat.sys" "X:\WINNT\System32\Drivers\fastfat.sys"
-copy /y "%NtTreePath%\atdisk.sys" "X:\WINNT\System32\Drivers\atdisk.sys"
-copy /y "%NtTreePath%\ftdisk.sys" "X:\WINNT\System32\Drivers\ftdisk.sys"
-copy /y "%NtTreePath%\abiosdsk.sys" "X:\WINNT\System32\Drivers\abiosdsk.sys"
+
+REM copy /y "%NtTreePath%\fs_rec.sys" "X:\WINNT\System32\Drivers\fs_rec.sys"
+REM copy /y "%NtTreePath%\atdisk.sys" "X:\WINNT\System32\Drivers\atdisk.sys"
+REM copy /y "%NtTreePath%\ftdisk.sys" "X:\WINNT\System32\Drivers\ftdisk.sys"
+REM copy /y "%NtTreePath%\abiosdsk.sys" "X:\WINNT\System32\Drivers\abiosdsk.sys"
+
+REM //
+REM // Copy "session manager".
+REM //
+
+copy /y "%NtTreePath%\ntshell.exe" "X:\WINNT\System32\smss.exe"
 
 REM //
 REM // Dismount disk image.

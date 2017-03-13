@@ -32,6 +32,16 @@ if errorlevel 1 (
 )
 
 REM //
+REM // Abort if a drive with mount point letter X already exists on this system to prevent
+REM // accidental data loss.
+REM //
+
+if exist X:\ (
+    echo A drive with letter 'X' already exists on this system. Please dismount X: drive.
+    exit /b 6969
+)
+
+REM //
 REM // Save environment and change current directory to the script file directory.
 REM //
 
